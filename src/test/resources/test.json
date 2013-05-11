@@ -1,0 +1,8 @@
+{
+  "reporting": {
+    "processArea": {
+      "allReports": "reporting_allReports_menuItem",
+      "computerReports": "reporting_computerReports_menuItem"
+    }
+  }
+}
