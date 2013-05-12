@@ -1,39 +1,47 @@
 package com.denarced.jsontojava;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 
+/**
+ * @author denarced
+ */
 public class JsonToJava {
-    static class JavaClass {
-        public Map<String, String> attributes = new HashMap<String, String>();
-        public List<String> inner = new LinkedList<String>();
+    private final JavaFileWriter writer;
+    private String rootClassName = "Root";
+
+    /**
+     * Initialize with JavaFileWriter.
+     */
+    public JsonToJava(JavaFileWriter writer) {
+        this.writer = writer;
     }
 
-    static String tab(int count) {
-        String t = "    ";
-        String s = "";
-        for (int i = 0; i < count; ++i) {
-            s += t;
-        }
-        return s;
-    }
-
-    JavaClass parseObject(JsonParser jp, final ClassWriter writer) {
+    /**
+     * Parse the current json object.
+     * @param jp is the parser in which the next token is then parsed json's
+     * next json object.
+     * @return the java class for the current json object.
+     */
+    JavaClass parseObject(JsonParser jp) {
         JavaClass javaClass = new JavaClass();
         try {
             while (jp.nextToken() != JsonToken.END_OBJECT) {
                 String fieldname = jp.getCurrentName();
-                JsonToken val = jp.nextToken(); // move to value, or START_OBJECT/START_ARRAY
+                JsonToken val = jp.nextToken();
                 if (val == JsonToken.VALUE_STRING) {
                     javaClass.attributes.put(fieldname, jp.getText());
                 } else if (val == JsonToken.START_OBJECT) {
-                    JavaClass jc = parseObject(jp, writer);
+                    JavaClass jc = parseObject(jp);
                     writer.write(fieldname, jc.attributes, jc.inner);
                     javaClass.inner.add(fieldname);
                 }
@@ -46,18 +54,32 @@ public class JsonToJava {
     }
 
     public void parse(File file) {
+        JsonParser jp = null;
         try {
             JsonFactory f = new JsonFactory();
-            JsonParser jp = f.createJsonParser(file);
+            jp = f.createJsonParser(file);
             jp.nextToken();
-            final ClassWriter writer = new ClassWriter(
-                    "com.denarced.jacksonparsetryout",
-                    "target/gen/");
-            JavaClass javaClass = parseObject(jp, writer);
-            writer.write("root", javaClass.attributes, javaClass.inner);
-            jp.close(); // ensure resources get cleaned up timely and properly
+            JavaClass javaClass = parseObject(jp);
+            writer.write(rootClassName, javaClass.attributes, javaClass.inner);
         } catch (Exception e) {
             System.out.println("Exception: " + e.getMessage());
+        } finally {
+            if (jp != null) {
+                try {
+                    jp.close();
+                } catch (IOException ex) {
+                    ; // ignore, what is there to do
+                }
+            }
         }
+    }
+
+    public void setRootClassName(String name) {
+        rootClassName = name;
+    }
+
+    static class JavaClass {
+        public Map<String, String> attributes = new HashMap<String, String>();
+        public List<String> inner = new LinkedList<String>();
     }
 }
