@@ -15,7 +15,7 @@ import org.apache.commons.lang.WordUtils;
 /**
  * @author denarced
  */
-class ClassWriter implements JavaFileWriter {
+public class ClassWriter implements JavaFileWriter {
     private String packageName;
     private String baseDir;
     private File targetDir;
