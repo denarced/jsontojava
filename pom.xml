@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.denarced</groupId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <artifactId>json-to-java</artifactId>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -55,4 +55,18 @@
       </plugin>
     </plugins>
   </build>
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>central</id>
+      <name>naralabuntu-releases</name>
+      <url>http://naralabuntu:8081/artifactory/libs-release-local</url>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>snapshots</id>
+      <name>naralabuntu-snapshots</name>
+      <url>http://naralabuntu:8081/artifactory/libs-snapshot-local</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
