@@ -56,6 +56,7 @@ public class ClassWriter implements JavaFileWriter {
     public void write(
         String name, 
         final Map<String, String> attributes, 
+        final Map<String, Long> longAttributes,
         final List<String> objects) {
         
         createPackageDir();
@@ -73,6 +74,13 @@ public class ClassWriter implements JavaFileWriter {
                     ClassWriter.tab(1),
                     set.getKey(),
                     StringEscapeUtils.escapeJava(set.getValue()),
+                    nl));
+            }
+            for (Entry<String, Long> set: longAttributes.entrySet()) {
+                writer.write(String.format("%spublic long %s = %d;%s",
+                    ClassWriter.tab(1),
+                    set.getKey(),
+                    set.getValue(),
                     nl));
             }
             for (String s : objects) {

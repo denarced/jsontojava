@@ -42,8 +42,10 @@ public class JsonToJava {
                     javaClass.attributes.put(fieldname, jp.getText());
                 } else if (val == JsonToken.START_OBJECT) {
                     JavaClass jc = parseObject(jp);
-                    writer.write(fieldname, jc.attributes, jc.inner);
+                    writer.write(fieldname, jc.attributes, jc.longAttributes, jc.inner);
                     javaClass.inner.add(fieldname);
+                } else if (val == JsonToken.VALUE_NUMBER_INT) {
+                    javaClass.longAttributes.put(fieldname, jp.getLongValue());
                 }
             }
         } catch (Exception e) {
@@ -60,7 +62,7 @@ public class JsonToJava {
             jp = f.createJsonParser(file);
             jp.nextToken();
             JavaClass javaClass = parseObject(jp);
-            writer.write(rootClassName, javaClass.attributes, javaClass.inner);
+            writer.write(rootClassName, javaClass.attributes, javaClass.longAttributes, javaClass.inner);
         } catch (Exception e) {
             System.out.println("Exception: " + e.getMessage());
         } finally {
@@ -80,6 +82,7 @@ public class JsonToJava {
 
     static class JavaClass {
         public Map<String, String> attributes = new HashMap<String, String>();
+        public Map<String, Long> longAttributes = new HashMap<String, Long>();
         public List<String> inner = new LinkedList<String>();
     }
 }

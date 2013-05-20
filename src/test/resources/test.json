@@ -4,5 +4,9 @@
       "allReports": "reporting_allReports_menuItem",
       "computerReports": "reporting_computerReports_menuItem"
     }
+  },
+  "primaryServer": {
+    "url": "http://www.myserv.com",
+    "port": 9001
   }
 }
