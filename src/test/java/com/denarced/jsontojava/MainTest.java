@@ -21,5 +21,17 @@ public class MainTest {
         json.setRootClassName("base");
         json.parse(file);
     }
+
+    @Test
+    public void generateStaticTest() throws URISyntaxException {
+        URI uri = getClass().getResource("/test.json").toURI();
+        File file = new File(uri);
+        JavaFileWriter writer = 
+            new ClassWriter("com.denarced.jsontojava", "target/gen/");
+        JsonToJava json = new JsonToJava(writer);
+        json.setRootClassName("base");
+        json.setGenerateStatic(true);
+        json.parse(file);
+    }
 }
 

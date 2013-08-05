@@ -19,10 +19,13 @@ public interface JavaFileWriter {
      * used as such as the attribute's name. The name is capitalized to get the
      * attribute's class. E.g. diamondPalace is translated into 
      * {@code public DiamondPalace diamondPalace = new DiamondPalace();}.
+     * @param generateStatic Whether to generate each class' attributes as
+     * static or not.
      */
     void write(
         String name, 
         Map<String, String> attributes, 
         Map<String, Long> longAttributes,
-        List<String> objects);
+        List<String> objects,
+        boolean generateStatic);
 }

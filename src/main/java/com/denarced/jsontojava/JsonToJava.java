@@ -18,12 +18,17 @@ import org.codehaus.jackson.JsonToken;
 public class JsonToJava {
     private final JavaFileWriter writer;
     private String rootClassName = "Root";
+    private boolean generateStatic = false;
 
     /**
      * Initialize with JavaFileWriter.
      */
     public JsonToJava(JavaFileWriter writer) {
         this.writer = writer;
+    }
+
+    public void setGenerateStatic(boolean generateStatic) {
+        this.generateStatic = generateStatic;
     }
 
     /**
@@ -42,7 +47,12 @@ public class JsonToJava {
                     javaClass.attributes.put(fieldname, jp.getText());
                 } else if (val == JsonToken.START_OBJECT) {
                     JavaClass jc = parseObject(jp);
-                    writer.write(fieldname, jc.attributes, jc.longAttributes, jc.inner);
+                    writer.write(
+                        fieldname, 
+                        jc.attributes, 
+                        jc.longAttributes, 
+                        jc.inner, 
+                        generateStatic);
                     javaClass.inner.add(fieldname);
                 } else if (val == JsonToken.VALUE_NUMBER_INT) {
                     javaClass.longAttributes.put(fieldname, jp.getLongValue());
@@ -62,7 +72,12 @@ public class JsonToJava {
             jp = f.createJsonParser(file);
             jp.nextToken();
             JavaClass javaClass = parseObject(jp);
-            writer.write(rootClassName, javaClass.attributes, javaClass.longAttributes, javaClass.inner);
+            writer.write(
+                rootClassName, 
+                javaClass.attributes, 
+                javaClass.longAttributes, 
+                javaClass.inner,
+                generateStatic);
         } catch (Exception e) {
             System.out.println("Exception: " + e.getMessage());
         } finally {

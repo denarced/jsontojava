@@ -57,7 +57,8 @@ public class ClassWriter implements JavaFileWriter {
         String name, 
         final Map<String, String> attributes, 
         final Map<String, Long> longAttributes,
-        final List<String> objects) {
+        final List<String> objects,
+        boolean generateStatic) {
         
         createPackageDir();
         final String className = WordUtils.capitalize(name);
@@ -69,24 +70,28 @@ public class ClassWriter implements JavaFileWriter {
             final String nl = System.getProperty("line.separator");
             writer.write(nl + nl);
             writer.write(String.format("public class %s {%s", className, nl));
+            final String staticStr = generateStatic ? "static" : "";
             for (Entry<String, String> set : attributes.entrySet()) {
-                writer.write(String.format("%spublic String %s = \"%s\";%s",
+                writer.write(String.format("%spublic %s String %s = \"%s\";%s",
                     ClassWriter.tab(1),
+                    staticStr,
                     set.getKey(),
                     StringEscapeUtils.escapeJava(set.getValue()),
                     nl));
             }
             for (Entry<String, Long> set: longAttributes.entrySet()) {
-                writer.write(String.format("%spublic long %s = %d;%s",
+                writer.write(String.format("%spublic %s long %s = %d;%s",
                     ClassWriter.tab(1),
+                    staticStr,
                     set.getKey(),
                     set.getValue(),
                     nl));
             }
             for (String s : objects) {
                 String cname = WordUtils.capitalize(s);
-                String objLine = String.format("%spublic %s %s = new %s();%s",
+                String objLine = String.format("%spublic %s %s %s = new %s();%s",
                     ClassWriter.tab(1),
+                    staticStr,
                     cname,
                     s,
                     cname,
