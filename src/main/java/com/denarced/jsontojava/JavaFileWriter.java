@@ -27,5 +27,6 @@ public interface JavaFileWriter {
         Map<String, String> attributes, 
         Map<String, Long> longAttributes,
         List<String> objects,
-        boolean generateStatic);
+        boolean generateStatic,
+        List<String> packageStack);
 }

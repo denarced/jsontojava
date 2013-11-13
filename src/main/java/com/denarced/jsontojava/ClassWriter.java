@@ -1,16 +1,13 @@
 package com.denarced.jsontojava;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.WordUtils;
+
+import java.io.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author denarced
@@ -19,7 +16,6 @@ public class ClassWriter implements JavaFileWriter {
     private String packageName;
     private String baseDir;
     private File targetDir;
-    private boolean dirCreated = false;
 
     /**
      * Initialize.
@@ -32,20 +28,46 @@ public class ClassWriter implements JavaFileWriter {
         this.baseDir = FilenameUtils.separatorsToSystem(baseDir);
     }
 
+    String packageStackToPackage(List<String> packageStack) {
+        String strPackage = "";
+        boolean first = true;
+        for (String each: packageStack) {
+            if (first) {
+                first = false;
+            } else {
+                strPackage += ".";
+            }
+            strPackage += each.toLowerCase();
+        }
+        return strPackage;
+    }
+
     /**
      * Create the directory into which the Java files are generated.
+     *
+     * @param packageStack Create sub-directories as necessary according to this
+     * list. Example: packageName = "com.google" and packageStack = "us.gmail".
+     * A directory baseDir/com/google/us/gmail will be created.
      */
-    void createPackageDir() {
-        if (dirCreated) {
-            return;
-        }
-        String packagePath = FilenameUtils.separatorsToSystem(packageName.replaceAll("\\.", "/"));
+    void createPackageDir(List<String> packageStack) {
+        String fullPackage =
+            packageName + "." + packageStackToPackage(packageStack);
+        String packagePath = FilenameUtils.separatorsToSystem(fullPackage.replaceAll("\\.+", "/"));
         targetDir = new File(FilenameUtils.concat(baseDir, packagePath));
         if (!targetDir.exists()) {
             if (!targetDir.mkdirs()) {
                 System.err.println("WARNING! DIRECTORY CREATION FAILED: " + targetDir.getAbsolutePath());
-                dirCreated = true;
             }
+        }
+    }
+
+    private String packageLine(List<String> packageStack) {
+        String strPackage = "package " + packageName;
+        String postPackage = packageStackToPackage(packageStack);
+        if (postPackage.isEmpty()) {
+            return strPackage + ";";
+        } else {
+            return strPackage + "." + postPackage + ";";
         }
     }
 
@@ -58,17 +80,32 @@ public class ClassWriter implements JavaFileWriter {
         final Map<String, String> attributes, 
         final Map<String, Long> longAttributes,
         final List<String> objects,
-        boolean generateStatic) {
+        boolean generateStatic,
+        List<String> packageStack) {
         
-        createPackageDir();
+        createPackageDir(packageStack);
         final String className = WordUtils.capitalize(name);
         File javaFile = new File(targetDir, className + ".java");
         BufferedWriter writer;
         try {
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(javaFile), "UTF-8"));
-            writer.write("package " + packageName + ";");
+            final String strPackageLine = packageLine(packageStack);
+            writer.write(strPackageLine);
             final String nl = System.getProperty("line.separator");
             writer.write(nl + nl);
+
+            for (String s: objects) {
+                writer.write(
+                    String.format(
+                        "import %s.%s.%s;%s",
+                        strPackageLine.substring(0, strPackageLine.length() - 1).replaceFirst("package", ""),
+                        className.toLowerCase(),
+                        WordUtils.capitalize(s),
+                        nl));
+            }
+
+            writer.write(nl + nl);
+
             writer.write(String.format("public class %s {%s", className, nl));
             final String staticStr = generateStatic ? "static" : "";
             for (Entry<String, String> set : attributes.entrySet()) {
