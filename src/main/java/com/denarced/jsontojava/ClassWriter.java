@@ -1,7 +1,6 @@
 package com.denarced.jsontojava;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.WordUtils;
 
 import java.io.*;
@@ -89,44 +88,33 @@ public class ClassWriter implements JavaFileWriter {
         BufferedWriter writer;
         try {
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(javaFile), "UTF-8"));
-            final String strPackageLine = packageLine(packageStack);
-            writer.write(strPackageLine);
             final String nl = System.getProperty("line.separator");
+            final ClassGenerator classGenerator = new ClassGenerator(packageStack, packageName);
+
+            final String strPackageLine = classGenerator.packageLine();
+            writer.write(strPackageLine);
             writer.write(nl + nl);
 
-            for (String s: objects) {
-                writer.write(
-                    String.format(
-                        "import %s.%s.%s;%s",
-                        strPackageLine.substring(0, strPackageLine.length() - 1).replaceFirst("package", ""),
-                        className.toLowerCase(),
-                        WordUtils.capitalize(s),
-                        nl));
+            for (String each: classGenerator.imports(objects, className)) {
+                writer.write(each);
+                writer.write(nl);
             }
-
             writer.write(nl + nl);
 
             writer.write(String.format("public class %s {%s", className, nl));
-            final String staticStr = generateStatic ? "static" : "";
-            for (Entry<String, String> set : attributes.entrySet()) {
-                writer.write(String.format("%spublic %s String %s = \"%s\";%s",
-                    ClassWriter.tab(1),
-                    staticStr,
-                    set.getKey(),
-                    StringEscapeUtils.escapeJava(set.getValue()),
-                    nl));
+
+            for (String each: classGenerator.stringAttributes(attributes, generateStatic)) {
+                writer.write(ClassWriter.tab(1) + each + nl);
             }
-            for (Entry<String, Long> set: longAttributes.entrySet()) {
-                writer.write(String.format("%spublic %s long %s = %d;%s",
-                    ClassWriter.tab(1),
-                    staticStr,
-                    set.getKey(),
-                    set.getValue(),
-                    nl));
+
+            for (String each: classGenerator.longAttributes(longAttributes, generateStatic)) {
+                writer.write(ClassWriter.tab(1) + each + nl);
             }
+
+            final String staticStr = generateStatic ? "static " : "";
             for (String s : objects) {
                 String cname = WordUtils.capitalize(s);
-                String objLine = String.format("%spublic %s %s %s = new %s();%s",
+                String objLine = String.format("%spublic %s%s %s = new %s();%s",
                     ClassWriter.tab(1),
                     staticStr,
                     cname,

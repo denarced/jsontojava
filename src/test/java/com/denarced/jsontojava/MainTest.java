@@ -1,9 +1,10 @@
 package com.denarced.jsontojava;
 
+import org.junit.Test;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.junit.Test;
 
 /**
  * Main test class.
@@ -27,7 +28,7 @@ public class MainTest {
         URI uri = getClass().getResource("/test.json").toURI();
         File file = new File(uri);
         JavaFileWriter writer = 
-            new ClassWriter("com.denarced.jsontojava", "target/gen/");
+            new ClassWriter("com.denarced.staticjsontojava", "target/gen/");
         JsonToJava json = new JsonToJava(writer);
         json.setRootClassName("base");
         json.setGenerateStatic(true);
