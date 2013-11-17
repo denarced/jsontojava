@@ -13,10 +13,12 @@ import java.util.Map;
 public class ClassGenerator {
     private final List<String> packageStack;
     private final String basePackage;
+    private final boolean isStatic;
 
-    public ClassGenerator(List<String> packageStack, String basePackage) {
+    public ClassGenerator(List<String> packageStack, String basePackage, boolean isStatic) {
         this.packageStack = packageStack;
         this.basePackage = basePackage;
+        this.isStatic = isStatic;
     }
 
     public String packageLine() {
@@ -41,25 +43,34 @@ public class ClassGenerator {
         return importLines;
     }
 
-    public List<String> stringAttributes(Map<String, String> attributes, boolean isStatic) {
+    public List<String> stringAttributes(Map<String, String> attributes) {
         List<AttributeProducer> attributeProducerList =
             new ArrayList<AttributeProducer>(attributes.size());
         for (Map.Entry<String, String> each: attributes.entrySet()) {
             attributeProducerList.add(newStringAttributeProducer(each.getKey(), each.getValue()));
         }
-        return attributes(attributeProducerList, isStatic);
+        return attributes(attributeProducerList);
     }
 
-    public List<String> longAttributes(Map<String, Long> attributes, boolean isStatic) {
+    public List<String> longAttributes(Map<String, Long> attributes) {
         List<AttributeProducer> attributeProducerList =
             new ArrayList<AttributeProducer>(attributes.size());
         for (Map.Entry<String, Long> each: attributes.entrySet()) {
             attributeProducerList.add(newLongAttributeProducer(each.getKey(), each.getValue()));
         }
-        return attributes(attributeProducerList, isStatic);
+        return attributes(attributeProducerList);
     }
 
-    private List<String> attributes(List<AttributeProducer> producerList, boolean isStatic) {
+    public List<String> objectAttributes(List<String> attributes) {
+        List<AttributeProducer> attributeProducerList =
+            new ArrayList<AttributeProducer>(attributes.size());
+        for (String each: attributes) {
+            attributeProducerList.add(newObjectAttributeProducer(each));
+        }
+        return attributes(attributeProducerList);
+    }
+
+    private List<String> attributes(List<AttributeProducer> producerList) {
         List<String> lineList = new ArrayList<String>(producerList.size());
         String staticStr = isStatic ? "static " : "";
         for (AttributeProducer each: producerList) {
@@ -131,5 +142,13 @@ public class ClassGenerator {
 
     private static AttributeProducer newLongAttributeProducer(String name, Long value) {
         return new AttributeProducer(name, value.toString(), "long");
+    }
+
+    private static AttributeProducer newObjectAttributeProducer(String name) {
+        String className = WordUtils.capitalize(name);
+        return new AttributeProducer(
+            name,
+            String.format("new %s()", className),
+            className);
     }
 }

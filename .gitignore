@@ -1,3 +1,7 @@
 tags
 target/
+.idea/
 *.swp
+*.sh
+*.iml
+*.log

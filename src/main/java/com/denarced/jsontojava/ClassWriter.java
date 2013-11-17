@@ -6,7 +6,6 @@ import org.apache.commons.lang.WordUtils;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * @author denarced
@@ -89,7 +88,8 @@ public class ClassWriter implements JavaFileWriter {
         try {
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(javaFile), "UTF-8"));
             final String nl = System.getProperty("line.separator");
-            final ClassGenerator classGenerator = new ClassGenerator(packageStack, packageName);
+            final ClassGenerator classGenerator =
+                new ClassGenerator(packageStack, packageName, generateStatic);
 
             final String strPackageLine = classGenerator.packageLine();
             writer.write(strPackageLine);
@@ -103,26 +103,18 @@ public class ClassWriter implements JavaFileWriter {
 
             writer.write(String.format("public class %s {%s", className, nl));
 
-            for (String each: classGenerator.stringAttributes(attributes, generateStatic)) {
+            for (String each: classGenerator.stringAttributes(attributes)) {
                 writer.write(ClassWriter.tab(1) + each + nl);
             }
 
-            for (String each: classGenerator.longAttributes(longAttributes, generateStatic)) {
+            for (String each: classGenerator.longAttributes(longAttributes)) {
                 writer.write(ClassWriter.tab(1) + each + nl);
             }
 
-            final String staticStr = generateStatic ? "static " : "";
-            for (String s : objects) {
-                String cname = WordUtils.capitalize(s);
-                String objLine = String.format("%spublic %s%s %s = new %s();%s",
-                    ClassWriter.tab(1),
-                    staticStr,
-                    cname,
-                    s,
-                    cname,
-                    nl);
-                writer.write(objLine);
+            for (String each: classGenerator.objectAttributes(objects)) {
+                writer.write(ClassWriter.tab(1) + each + nl);
             }
+
             writer.write("}" + nl);
             writer.flush();
             writer.close();

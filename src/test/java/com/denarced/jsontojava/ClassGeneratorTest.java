@@ -17,7 +17,8 @@ public class ClassGeneratorTest {
     @Test
     public void testPackageLine() throws Exception {
         // SETUP SUT
-        ClassGenerator classGenerator = new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE);
+        ClassGenerator classGenerator =
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
 
         // EXERCISE
         String strPackage = classGenerator.packageLine();
@@ -31,7 +32,7 @@ public class ClassGeneratorTest {
     public void testImportsWithEmptyObjectsList() {
         // SETUP SUT
         ClassGenerator classGenerator =
-            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE);
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
 
         // EXERCISE
         List<String> importLines =
@@ -48,7 +49,7 @@ public class ClassGeneratorTest {
     public void testImports() {
         // SETUP SUT
         ClassGenerator classGenerator =
-            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE);
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
 
         // EXERCISE
         final String objectName = "lineFormatter";
@@ -75,7 +76,7 @@ public class ClassGeneratorTest {
     public void testStringAttributes() {
         // SETUP SUT
         ClassGenerator classGenerator =
-            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE);
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
         Map<String, String> stringAttributes = new HashMap<String, String>();
         final String attributeName = "fingerEraser";
         final String attributeValue = "Mr.Sharp";
@@ -83,7 +84,7 @@ public class ClassGeneratorTest {
 
         // EXERCISE
         List<String> attributeLineList =
-            classGenerator.stringAttributes(stringAttributes, true);
+            classGenerator.stringAttributes(stringAttributes);
 
         // VERIFY
         Assert.assertEquals(
@@ -107,7 +108,7 @@ public class ClassGeneratorTest {
     public void testLongAttributes() {
         // SETUP SUT
         ClassGenerator classGenerator =
-            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE);
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
         Map<String, Long> longAttributes = new HashMap<String, Long>();
         final String attributeName = "fingerEraser";
         final Long attributeValue = 49L;
@@ -115,7 +116,7 @@ public class ClassGeneratorTest {
 
         // EXERCISE
         List<String> attributeLineList =
-            classGenerator.longAttributes(longAttributes, true);
+            classGenerator.longAttributes(longAttributes);
 
         // VERIFY
         Assert.assertEquals(
@@ -132,6 +133,39 @@ public class ClassGeneratorTest {
             attributeName,
             "=",
             attributeValue + ";");
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testObjectAttributes() {
+        // SETUP SUT
+        ClassGenerator classGenerator =
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
+        List<String> objectAttributes = new ArrayList<String>();
+        final String className = "MagicWand";
+        final String attributeName = "magicWand";
+        objectAttributes.add(attributeName);
+
+        // EXERCISE
+        List<String> attributeLineList =
+            classGenerator.objectAttributes(objectAttributes);
+
+        // VERIFY
+        Assert.assertEquals(
+            "One attribute, one list item.",
+            1,
+            attributeLineList.size());
+        List<String> actual = Arrays.asList(
+            StringUtils.split(
+                attributeLineList.get(0)));
+        List<String> expected = Arrays.asList(
+            "public",
+            "static",
+            className,
+            attributeName,
+            "=",
+            "new",
+            String.format("%s();", className));
         Assert.assertEquals(expected, actual);
     }
 }
