@@ -13,12 +13,10 @@ import java.util.Map;
 public class ClassGenerator {
     private final List<String> packageStack;
     private final String basePackage;
-    private final boolean isStatic;
 
-    public ClassGenerator(List<String> packageStack, String basePackage, boolean isStatic) {
+    public ClassGenerator(List<String> packageStack, String basePackage) {
         this.packageStack = packageStack;
         this.basePackage = basePackage;
-        this.isStatic = isStatic;
     }
 
     public String packageLine() {
@@ -72,10 +70,8 @@ public class ClassGenerator {
 
     private List<String> attributes(List<AttributeProducer> producerList) {
         List<String> lineList = new ArrayList<String>(producerList.size());
-        String staticStr = isStatic ? "static " : "";
         for (AttributeProducer each: producerList) {
-            String line = String.format("public %s%s %s = %s;",
-                staticStr,
+            String line = String.format("public %s %s = %s;",
                 each.kind(),
                 each.name(),
                 each.valueRepresentation());

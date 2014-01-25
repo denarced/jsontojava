@@ -14,17 +14,12 @@ import java.util.*;
 public class JsonToJava {
     private final JavaFileWriter writer;
     private String rootClassName = "Root";
-    private boolean generateStatic = false;
 
     /**
      * Initialize with JavaFileWriter.
      */
     public JsonToJava(JavaFileWriter writer) {
         this.writer = writer;
-    }
-
-    public void setGenerateStatic(boolean generateStatic) {
-        this.generateStatic = generateStatic;
     }
 
     /**
@@ -53,7 +48,6 @@ public class JsonToJava {
                         jc.attributes, 
                         jc.longAttributes, 
                         jc.inner, 
-                        generateStatic,
                         packageStack);
                     javaClass.inner.add(fieldname);
                 } else if (val == JsonToken.VALUE_NUMBER_INT) {
@@ -80,7 +74,6 @@ public class JsonToJava {
                 javaClass.attributes, 
                 javaClass.longAttributes, 
                 javaClass.inner,
-                generateStatic,
                 Collections.<String>emptyList());
         } catch (Exception e) {
             System.out.println("Exception: " + e.getMessage());

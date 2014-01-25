@@ -18,7 +18,7 @@ public class ClassGeneratorTest {
     public void testPackageLine() throws Exception {
         // SETUP SUT
         ClassGenerator classGenerator =
-            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE);
 
         // EXERCISE
         String strPackage = classGenerator.packageLine();
@@ -32,7 +32,7 @@ public class ClassGeneratorTest {
     public void testImportsWithEmptyObjectsList() {
         // SETUP SUT
         ClassGenerator classGenerator =
-            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE);
 
         // EXERCISE
         List<String> importLines =
@@ -49,7 +49,7 @@ public class ClassGeneratorTest {
     public void testImports() {
         // SETUP SUT
         ClassGenerator classGenerator =
-            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE);
 
         // EXERCISE
         final String objectName = "lineFormatter";
@@ -76,7 +76,7 @@ public class ClassGeneratorTest {
     public void testStringAttributes() {
         // SETUP SUT
         ClassGenerator classGenerator =
-            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE);
         Map<String, String> stringAttributes = new HashMap<String, String>();
         final String attributeName = "fingerEraser";
         final String attributeValue = "Mr.Sharp";
@@ -96,7 +96,6 @@ public class ClassGeneratorTest {
                 attributeLineList.get(0)));
         List<String> expected = Arrays.asList(
             "public",
-            "static",
             "String",
             attributeName,
             "=",
@@ -108,7 +107,7 @@ public class ClassGeneratorTest {
     public void testLongAttributes() {
         // SETUP SUT
         ClassGenerator classGenerator =
-            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE);
         Map<String, Long> longAttributes = new HashMap<String, Long>();
         final String attributeName = "fingerEraser";
         final Long attributeValue = 49L;
@@ -128,7 +127,6 @@ public class ClassGeneratorTest {
                 attributeLineList.get(0)));
         List<String> expected = Arrays.asList(
             "public",
-            "static",
             "long",
             attributeName,
             "=",
@@ -140,7 +138,7 @@ public class ClassGeneratorTest {
     public void testObjectAttributes() {
         // SETUP SUT
         ClassGenerator classGenerator =
-            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE, true);
+            new ClassGenerator(Collections.<String>emptyList(), BASE_PACKAGE);
         List<String> objectAttributes = new ArrayList<String>();
         final String className = "MagicWand";
         final String attributeName = "magicWand";
@@ -160,7 +158,6 @@ public class ClassGeneratorTest {
                 attributeLineList.get(0)));
         List<String> expected = Arrays.asList(
             "public",
-            "static",
             className,
             attributeName,
             "=",

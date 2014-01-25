@@ -78,7 +78,6 @@ public class ClassWriter implements JavaFileWriter {
         final Map<String, String> attributes, 
         final Map<String, Long> longAttributes,
         final List<String> objects,
-        boolean generateStatic,
         List<String> packageStack) {
         
         createPackageDir(packageStack);
@@ -89,7 +88,7 @@ public class ClassWriter implements JavaFileWriter {
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(javaFile), "UTF-8"));
             final String nl = System.getProperty("line.separator");
             final ClassGenerator classGenerator =
-                new ClassGenerator(packageStack, packageName, generateStatic);
+                new ClassGenerator(packageStack, packageName);
 
             final String strPackageLine = classGenerator.packageLine();
             writer.write(strPackageLine);
