@@ -38,14 +38,14 @@ public class JsonToJava {
                 String fieldname = jp.getCurrentName();
                 JsonToken val = jp.nextToken();
                 if (val == JsonToken.VALUE_STRING) {
-                    javaClass.attributes.put(fieldname, jp.getText());
+                    javaClass.stringAttributes.put(fieldname, jp.getText());
                 } else if (val == JsonToken.START_OBJECT) {
                     List<String> newStack = new ArrayList<String>(packageStack);
                     newStack.add(fieldname);
                     JavaClass jc = parseObject(jp, newStack);
                     writer.write(
                         fieldname, 
-                        jc.attributes, 
+                        jc.stringAttributes,
                         jc.longAttributes, 
                         jc.inner, 
                         packageStack);
@@ -71,7 +71,7 @@ public class JsonToJava {
             JavaClass javaClass = parseObject(jp, rootStack);
             writer.write(
                 rootClassName, 
-                javaClass.attributes, 
+                javaClass.stringAttributes,
                 javaClass.longAttributes, 
                 javaClass.inner,
                 Collections.<String>emptyList());
@@ -93,7 +93,7 @@ public class JsonToJava {
     }
 
     static class JavaClass {
-        public Map<String, String> attributes = new HashMap<String, String>();
+        public Map<String, String> stringAttributes = new HashMap<String, String>();
         public Map<String, Long> longAttributes = new HashMap<String, Long>();
         public List<String> inner = new LinkedList<String>();
     }
