@@ -30,38 +30,24 @@ public class JsonObject {
         objects.put(name, object);
     }
 
-    public void print() {
-        printObject(0, this);
+    public void printInto(JavaClassWriter javaClassWriter) {
+        javaClassWriter.printPackage();
+        printInto(0, this, javaClassWriter);
     }
 
-    public static void printObject(int level, JsonObject jsonObject) {
-        System.out.println(tab(level) + jsonObject.name + ":");
+    public void printInto(int level, JsonObject jsonObject, JavaClassWriter javaClassWriter) {
+        javaClassWriter.setLevel(level);
+        javaClassWriter.classDeclaration(jsonObject.name);
         for (Map.Entry<String, String> each: jsonObject.strings.entrySet()) {
-            System.out.println(
-                String.format(
-                    "%s%s: %s",
-                    tab(level + 1),
-                    each.getKey(),
-                    each.getValue()));
+            javaClassWriter.addString(each.getKey(), each.getValue());
         }
         for (Map.Entry<String, Long> each: jsonObject.longs.entrySet()) {
-            System.out.println(
-                String.format(
-                    "%s%s: %d",
-                    tab(level + 1),
-                    each.getKey(),
-                    each.getValue()));
+            javaClassWriter.addLong(each.getKey(), each.getValue());
         }
         for (Map.Entry<String, JsonObject> each: jsonObject.objects.entrySet()) {
-            printObject(level + 1, each.getValue());
+            printInto(level + 1, each.getValue(), javaClassWriter);
         }
-    }
-
-    private static String tab(int level) {
-        String s = "";
-        for (int i = 0; i < level; ++i) {
-            s += " ";
-        }
-        return s;
+        javaClassWriter.setLevel(level);
+        javaClassWriter.endClass();
     }
 }

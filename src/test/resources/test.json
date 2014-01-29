@@ -1,11 +1,11 @@
 {
-  "reporting": {
-    "processArea": {
+  "Reporting": {
+    "ProcessArea": {
       "allReports": "reporting_allReports_menuItem",
       "computerReports": "reporting_computerReports_menuItem"
     }
   },
-  "primaryServer": {
+  "PrimaryServer": {
     "url": "http://www.myserv.com",
     "port": 9001
   }
